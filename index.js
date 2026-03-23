@@ -40,3 +40,35 @@ items.forEach(function(item) {
 	const taskElement = createItem(item);
 	listElement.append(taskElement);
 })
+
+// Обработчик отправки формы с подробным логированием
+formElement.addEventListener("to-do__submit", function(event) {
+    console.log("1. Событие submit сработало");
+    
+    event.preventDefault();
+    
+    const taskText = inputElement.value.trim();
+    console.log("2. Текст задачи:", taskText);
+    
+    if (taskText === "") {
+        console.log("3. Текст пустой, выход");
+        return;
+    }
+    
+    console.log("4. Создаём элемент задачи");
+    const taskElement = createItem(taskText);
+    console.log("5. Созданный элемент:", taskElement);
+    
+    if (!taskElement) {
+        console.error("6. Ошибка: taskElement = null");
+        return;
+    }
+    
+    console.log("7. Добавляем в начало списка");
+    listElement.prepend(taskElement);
+    
+    console.log("8. Текущее количество задач в DOM:", listElement.children.length);
+    
+    inputElement.value = "";
+    console.log("9. Поле ввода очищено");
+});
