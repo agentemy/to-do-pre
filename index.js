@@ -12,7 +12,12 @@ const formElement = document.querySelector(".to-do__form");
 const inputElement = document.querySelector(".to-do__input");
 
 function loadTasks() {
-	return items;
+	const savedTasks = localStorage.getItem("tasks");
+	if (savedTasks) {
+		return JSON.parse(savedTasks);
+	} else {
+		return items;
+	}
 }
 
 function createItem(item) {
@@ -27,7 +32,12 @@ function createItem(item) {
 }
 
 function getTasksFromDOM() {
-
+	const itemsNamesElements = document.querySelectorAll(".to-do__item-text");
+	const tasks = [];
+	itemsNamesElements.forEach(function(element) {
+		tasks.push(element.textContent);
+	});
+	return tasks;
 }
 
 function saveTasks(tasks) {
@@ -35,40 +45,21 @@ function saveTasks(tasks) {
 }
 
 items = loadTasks();
-
+listElement.innerHTML = "";
 items.forEach(function(item) {
 	const taskElement = createItem(item);
 	listElement.append(taskElement);
 })
 
-// Обработчик отправки формы с подробным логированием
-formElement.addEventListener("to-do__submit", function(event) {
-    console.log("1. Событие submit сработало");
-    
-    event.preventDefault();
-    
-    const taskText = inputElement.value.trim();
-    console.log("2. Текст задачи:", taskText);
-    
-    if (taskText === "") {
-        console.log("3. Текст пустой, выход");
-        return;
-    }
-    
-    console.log("4. Создаём элемент задачи");
-    const taskElement = createItem(taskText);
-    console.log("5. Созданный элемент:", taskElement);
-    
-    if (!taskElement) {
-        console.error("6. Ошибка: taskElement = null");
-        return;
-    }
-    
-    console.log("7. Добавляем в начало списка");
-    listElement.prepend(taskElement);
-    
-    console.log("8. Текущее количество задач в DOM:", listElement.children.length);
-    
-    inputElement.value = "";
-    console.log("9. Поле ввода очищено");
-});
+formElement.addEventListener("submit", function(event) {
+	event.preventDefault();
+	const taskText = inputElement.value.trim();
+	if (taskText === "") {
+		return;
+	}
+	const taskElement = createItem(taskText);
+	listElement.prepend(taskElement);
+	items = getTasksFromDOM();
+	saveTasks(items);
+	inputElement.value = "";
+})
